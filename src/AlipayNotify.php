@@ -13,8 +13,12 @@
  * 调试通知返回时，可查看或改写log日志的写入TXT里的数据，来检查通知返回是否正常
  */
 
-require_once("alipay_core.function.php");
-require_once("alipay_md5.function.php");
+namespace juju\alipay;
+
+
+use juju\alipay\AlipayCore;
+use juju\alipay\AlipayMd5;
+
 
 class AlipayNotify {
     /**
@@ -27,17 +31,19 @@ class AlipayNotify {
 	var $http_verify_url = 'http://notify.alipay.com/trade/notify_query.do?';
 	var $alipay_config;
 
-	function __construct($alipay_config){
+	public function __construct($alipay_config){
 		$this->alipay_config = $alipay_config;
 	}
-    function AlipayNotify($alipay_config) {
+
+	public function AlipayNotify($alipay_config) {
     	$this->__construct($alipay_config);
     }
-    /**
+
+	/**
      * 针对notify_url验证消息是否是支付宝发出的合法消息
      * @return 验证结果
      */
-	function verifyNotify(){
+	public function verifyNotify(){
 		if(empty($_POST)) {//判断POST来的数组是否为空
 			return false;
 		}
@@ -56,8 +62,8 @@ class AlipayNotify {
 			//	$isSignStr = 'false';
 			//}
 			//$log_text = "responseTxt=".$responseTxt."\n notify_url_log:isSign=".$isSignStr.",";
-			//$log_text = $log_text.createLinkString($_POST);
-			//logResult($log_text);
+			//$log_text = $log_text.AlipayCore::createLinkString($_POST);
+			//AlipayCore::logResult($log_text);
 			
 			//验证
 			//$responsetTxt的结果不是true，与服务器设置问题、合作身份者ID、notify_id一分钟失效有关
@@ -74,7 +80,7 @@ class AlipayNotify {
      * 针对return_url验证消息是否是支付宝发出的合法消息
      * @return 验证结果
      */
-	function verifyReturn(){
+	public function verifyReturn(){
 		if(empty($_GET)) {//判断POST来的数组是否为空
 			return false;
 		}
@@ -93,8 +99,8 @@ class AlipayNotify {
 			//	$isSignStr = 'false';
 			//}
 			//$log_text = "responseTxt=".$responseTxt."\n return_url_log:isSign=".$isSignStr.",";
-			//$log_text = $log_text.createLinkString($_GET);
-			//logResult($log_text);
+			//$log_text = $log_text.AlipayCore::createLinkString($_GET);
+			//AlipayCore::logResult($log_text);
 			
 			//验证
 			//$responsetTxt的结果不是true，与服务器设置问题、合作身份者ID、notify_id一分钟失效有关
@@ -113,20 +119,20 @@ class AlipayNotify {
      * @param $sign 返回的签名结果
      * @return 签名验证结果
      */
-	function getSignVeryfy($para_temp, $sign) {
+	public function getSignVeryfy($para_temp, $sign) {
 		//除去待签名参数数组中的空值和签名参数
-		$para_filter = paraFilter($para_temp);
+		$para_filter = AlipayCore::paraFilter($para_temp);
 		
 		//对待签名参数数组排序
-		$para_sort = argSort($para_filter);
+		$para_sort = AlipayCore::argSort($para_filter);
 		
 		//把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
-		$prestr = createLinkstring($para_sort);
+		$prestr = AlipayCore::createLinkstring($para_sort);
 		
 		$isSgin = false;
 		switch (strtoupper(trim($this->alipay_config['sign_type']))) {
 			case "MD5" :
-				$isSgin = md5Verify($prestr, $sign, $this->alipay_config['key']);
+				$isSgin = AlipayMd5::md5Verify($prestr, $sign, $this->alipay_config['key']);
 				break;
 			default :
 				$isSgin = false;
@@ -144,7 +150,7 @@ class AlipayNotify {
      * true 返回正确信息
      * false 请检查防火墙或者是服务器阻止端口问题以及验证时间是否超过一分钟
      */
-	function getResponse($notify_id) {
+	public function getResponse($notify_id) {
 		$transport = strtolower(trim($this->alipay_config['transport']));
 		$partner = trim($this->alipay_config['partner']);
 		$veryfy_url = '';
@@ -155,7 +161,7 @@ class AlipayNotify {
 			$veryfy_url = $this->http_verify_url;
 		}
 		$veryfy_url = $veryfy_url."partner=" . $partner . "&notify_id=" . $notify_id;
-		$responseTxt = getHttpResponseGET($veryfy_url, $this->alipay_config['cacert']);
+		$responseTxt = AlipayCore::getHttpResponseGET($veryfy_url, $this->alipay_config['cacert']);
 		
 		return $responseTxt;
 	}

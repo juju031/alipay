@@ -1,6 +1,6 @@
 {
     "name": "juju/alipay",
-    "description": "Yii2 Ip to Location",
+    "description": "Yii2 Alipay",
     "type": "yii2-extension",
     "license": "MIT",
     "authors": [
@@ -12,11 +12,11 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "juju\\alipay\\": "src/alipay.php"
+            "juju\\alipay\\": "src/"
         }
     },
     "require": {
         "php": ">=5.4.0",
-        "yiisoft/yii2": ">=2.0.6"
+        "yiisoft/yii2": ">=2.0.0"
     }
 }
