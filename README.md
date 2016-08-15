@@ -57,4 +57,11 @@ exit();
 ##控制器顶部
 ```
 未完成
+$alipayConfig = (new AlipayConfig())->getAlipayConfig();
+$notify = new AlipayNotify($alipayConfig);
+if ($notify->verifyNotify()) {
+	return "success";
+}else{
+	return "false";
+}
 ```
