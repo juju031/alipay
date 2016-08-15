@@ -1,5 +1,14 @@
 ## 生成支付宝
 
+##配置项
+
+```
+params.php中添加
+'alipayPartner' => '208841100000',
+'alipaySellerEmail' => '123123@sdf.com',
+'alipayKey' => 'kq1lqfa599ifsdfsdfsdf4845p2sknjzh',
+```
+
 ##安装
 
 ```
